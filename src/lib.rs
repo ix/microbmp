@@ -7,8 +7,8 @@ use std::intrinsics::transmute;
 // Pixel enumerated type containing each BPP.
 #[derive(Debug, Clone)]
 pub enum Pixel {
-  ARGB(u8, u8, u8, u8),
-  RGB(u8, u8, u8)
+  ABGR(u8, u8, u8, u8),
+  BGR(u8, u8, u8)
 }
 
 // Enum for each compression method.
