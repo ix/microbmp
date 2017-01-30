@@ -1,6 +1,11 @@
 [package]
 name = "microbmp"
 version = "0.1.0"
-authors = ["Lain <lain@lain.org.uk>"]
+authors = ["Rose <rose@lain.org.uk>"]
+description = "Tiny and probably imperfect self-contained bitmap image reading library."
+repository = "https://github.com/chihiro/microbmp"
+keywords = ["image", "bitmap", "bmp", "microbmp"]
+categories = ["multimedia::images"]
+license = "MIT"
 
 [dependencies]
