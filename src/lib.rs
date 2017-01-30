@@ -116,7 +116,7 @@ impl Bitmap {
         buf[offset as usize .. end as usize]
           .chunks(4)
           .map(|slice| {
-            Pixel::ARGB(slice[0], slice[1], slice[2], slice[3])
+            Pixel::ABGR(slice[0], slice[1], slice[2], slice[3])
           })
           .collect::<Vec<_>>()
       }
