@@ -2,6 +2,7 @@
 
 use std::io::prelude::*;
 use std::fs::File;
+use std::io;
 use std::intrinsics::transmute;
 
 // Pixel enumerated type containing each BPP.
@@ -44,10 +45,30 @@ pub struct Bitmap {
   pub pixels: Vec<Pixel>
 }
 
+pub type BitmapResult<T> = Result<T, BitmapError>;
+
+#[derive(Debug)]
+pub enum BitmapError {
+  InvalidBitmapData,
+  UnsupportedBitsPerPixel,
+  BitmapIOError(io::Error)
+}
+
+impl std::convert::From<io::Error> for BitmapError {
+  fn from(err: io::Error) -> BitmapError {
+    BitmapError::BitmapIOError(err)
+  }
+}
+
 impl Bitmap {
-  pub fn new(file: &mut File) -> Bitmap {
+  pub fn new(file: &mut File) -> BitmapResult<Bitmap> {
     let mut buf: Vec<u8> = Vec::new();    
-    file.read_to_end(&mut buf).expect("Failed to read the file.");
+    try!(file.read_to_end(&mut buf));
+
+    // magic number check
+    if &buf[0..1] != b"BM" {
+      return Err(BitmapError::InvalidBitmapData)
+    }
 
     let size: u32 = unsafe {
       let mut bytes: [u8; 4] = [0; 4];
@@ -121,10 +142,10 @@ impl Bitmap {
           .collect::<Vec<_>>()
       }
 
-      _ => { panic!("Unsupported bits-per-pixel!") }
+      _ => { return Err(BitmapError::UnsupportedBitsPerPixel) }
     };
     
-    Bitmap {
+    Ok(Bitmap {
       data: buf,
       size: size,
       offset: offset,
@@ -137,16 +158,6 @@ impl Bitmap {
         colors: colors
       },
       pixels: pixel_data
-    }
-  }
-
-  pub fn validity(&self) -> bool {
-    if &self.data[0..1] != b"BM" {
-      false
-    }
-
-    else {
-      true
-    }
+    })
   }
 }
