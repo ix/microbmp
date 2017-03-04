@@ -9,7 +9,8 @@ use std::intrinsics::transmute;
 #[derive(Debug, Clone)]
 pub enum Pixel {
   ABGR(u8, u8, u8, u8),
-  BGR(u8, u8, u8)
+  BGR(u8, u8, u8),
+  PaletteColor(u8)
 }
 
 // Enum for each compression method.
@@ -66,7 +67,7 @@ impl Bitmap {
     try!(file.read_to_end(&mut buf));
 
     // magic number check
-    if &buf[0..1] != b"BM" {
+    if &buf[0..2] != b"BM" {
       return Err(BitmapError::InvalidBitmapData)
     }
 
@@ -139,6 +140,18 @@ impl Bitmap {
           .map(|slice| {
             Pixel::ABGR(slice[0], slice[1], slice[2], slice[3])
           })
+          .collect::<Vec<_>>()
+      }
+
+      4 => {
+        fn nibbles(n: u8) -> Vec<u8> {
+          vec![(n & 0xF0) >> 4, n & 0xF]
+        }
+
+        buf[offset as usize .. end as usize]
+          .iter()
+          .flat_map(|pixel| nibbles(*pixel))
+          .map(|pixel| Pixel::PaletteColor(pixel))
           .collect::<Vec<_>>()
       }
 
