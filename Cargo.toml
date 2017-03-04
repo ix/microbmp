@@ -1,6 +1,6 @@
 [package]
 name = "microbmp"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Rose <rose@lain.org.uk>"]
 description = "Tiny and probably imperfect self-contained bitmap image reading library."
 repository = "https://github.com/chihiro/microbmp"
